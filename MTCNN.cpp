@@ -285,45 +285,4 @@ void MTCNN::detection(const cv::Mat& img, std::vector<cv::Rect>& rectangles){
         rectangles[i] = cv::Rect(finalBbox[i].x1, finalBbox[i].y1, finalBbox[i].x2 - finalBbox[i].x1 + 1, finalBbox[i].y2 - finalBbox[i].y1 + 1);
     }
 }
-//int main(int argc, char** argv){
-//    std::vector<std::string> model_file = {
-//		"../models/det1.param",
-//		"../models/det2.param",
-//		"../models/det3.param"
-//    };
-//
-//    std::vector<std::string> trained_file = {
-//		"../models/det1.bin",
-//		"../models/det2.bin",
-//		"../models/det3.bin"
-//    };
-//    MTCNN mtcnn(model_file, trained_file);
-//    cv::VideoCapture mVideoCapture(0);
-//    if(!mVideoCapture.isOpened()){
-//        return -1;
-//    }
-//    cv::Mat frame;
-//    mVideoCapture>>frame;
-//    while(!frame.empty()){
-//        mVideoCapture>>frame;
-//        if(frame.empty()){
-//            break;
-//        }
-//        struct timeval  tv1,tv2;
-//        struct timezone tz1,tz2;
-//        gettimeofday(&tv1,&tz1);
-//        std::vector<cv::Rect> bbox;
-//        mtcnn.detection(frame, bbox);
-//        for(vector<cv::Rect>::iterator it = bbox.begin(); it != bbox.end(); it++){
-//            rectangle(frame, (*it), Scalar(0,0,255), 2,8,0);
-//        }
-//        imshow("face_detection",frame);
-//        gettimeofday(&tv2,&tz2);
-//        printf( "%s = %g ms \n ", "Detection All time", getElapse(&tv1, &tv2) );
-//        int q = cv::waitKey(10);
-//        if(q == 27){
-//            break;
-//        }
-//    }
-//    return 1;
-//}
+
