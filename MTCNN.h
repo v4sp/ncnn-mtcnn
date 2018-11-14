@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 #include <sys/time.h>
-using namespace std;
-using namespace cv;
 struct Bbox
 {
     float score;
@@ -31,9 +29,9 @@ public:
     void detect(ncnn::Mat& img_, std::vector<Bbox>& finalBbox);
     void detection(const cv::Mat& img, std::vector<cv::Rect>& rectangles);
 private:
-    void generateBbox(ncnn::Mat score, ncnn::Mat location, vector<Bbox>& boundingBox_, float scale);
-    void nms(vector<Bbox> &boundingBox_, const float overlap_threshold, string modelname="Union");
-    void refine(vector<Bbox> &vecBbox, const int &height, const int &width, bool square);
+    void generateBbox(ncnn::Mat score, ncnn::Mat location, std::vector<Bbox>& boundingBox_, float scale);
+    void nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, std::string modelname="Union");
+    void refine(std::vector<Bbox> &vecBbox, const int &height, const int &width, bool square);
     void PNet();
     void RNet();
     void ONet();

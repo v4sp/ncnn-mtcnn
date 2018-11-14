@@ -69,7 +69,7 @@ void MTCNN::generateBbox(ncnn::Mat score, ncnn::Mat location, std::vector<Bbox>&
         }
     }
 }
-void MTCNN::nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, string modelname){
+void MTCNN::nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, std::string modelname){
     if(boundingBox_.empty()){
         return;
     }
@@ -123,15 +123,15 @@ void MTCNN::nms(std::vector<Bbox> &boundingBox_, const float overlap_threshold, 
     }
     boundingBox_ = tmp_;
 }
-void MTCNN::refine(vector<Bbox> &vecBbox, const int &height, const int &width, bool square){
+void MTCNN::refine(std::vector<Bbox> &vecBbox, const int &height, const int &width, bool square){
     if(vecBbox.empty()){
-        cout<<"Bbox is empty!!"<<endl;
+        std::cout << "Bbox is empty!!" << std::endl;
         return;
     }
     float bbw=0, bbh=0, maxSide=0;
     float h = 0, w = 0;
     float x1=0, y1=0, x2=0, y2=0;
-    for(vector<Bbox>::iterator it=vecBbox.begin(); it!=vecBbox.end();it++){
+    for(std::vector<Bbox>::iterator it=vecBbox.begin(); it!=vecBbox.end();it++){
         bbw = (*it).x2 - (*it).x1 + 1;
         bbh = (*it).y2 - (*it).y1 + 1;
         x1 = (*it).x1 + (*it).regreCoord[0]*bbw;
@@ -168,7 +168,7 @@ void MTCNN::PNet(){
     float m = (float)MIN_DET_SIZE/minsize;
     minl *= m;
     float factor = 0.709;
-    vector<float> scales_;
+    std::vector<float> scales_;
     while(minl>MIN_DET_SIZE){
         scales_.push_back(m);
         minl *= factor;
@@ -196,7 +196,7 @@ void MTCNN::PNet(){
 void MTCNN::RNet(){
     secondBbox_.clear();
     int count = 0;
-    for(vector<Bbox>::iterator it=firstBbox_.begin(); it!=firstBbox_.end();it++){
+    for(std::vector<Bbox>::iterator it=firstBbox_.begin(); it!=firstBbox_.end();it++){
         ncnn::Mat tempIm;
         copy_cut_border(img, tempIm, (*it).y1, img_h-(*it).y2, (*it).x1, img_w-(*it).x2);
         ncnn::Mat in;
@@ -207,7 +207,7 @@ void MTCNN::RNet(){
         ncnn::Mat score, bbox;
         ex.extract("prob1", score);
         ex.extract("conv5-2", bbox);
-        if(*(score.data+score.cstep) > threshold[1]){
+        if(*(float*)(score.data+score.cstep) > threshold[1]){
             for(int channel=0;channel<4;channel++){
                 it->regreCoord[channel]=bbox.channel(channel)[0];//*(bbox.data+channel*bbox.cstep);
             }
@@ -219,7 +219,7 @@ void MTCNN::RNet(){
 }
 void MTCNN::ONet(){
     thirdBbox_.clear();
-    for(vector<Bbox>::iterator it=secondBbox_.begin(); it!=secondBbox_.end();it++){
+    for(std::vector<Bbox>::iterator it=secondBbox_.begin(); it!=secondBbox_.end();it++){
         ncnn::Mat tempIm;
         copy_cut_border(img, tempIm, (*it).y1, img_h-(*it).y2, (*it).x1, img_w-(*it).x2);
         ncnn::Mat in;
@@ -285,45 +285,45 @@ void MTCNN::detection(const cv::Mat& img, std::vector<cv::Rect>& rectangles){
         rectangles[i] = cv::Rect(finalBbox[i].x1, finalBbox[i].y1, finalBbox[i].x2 - finalBbox[i].x1 + 1, finalBbox[i].y2 - finalBbox[i].y1 + 1);
     }
 }
-int main(int argc, char** argv){
-    std::vector<std::string> model_file = {
-		"../models/det1.param",
-		"../models/det2.param",
-		"../models/det3.param"
-    };
-
-    std::vector<std::string> trained_file = {
-		"../models/det1.bin",
-		"../models/det2.bin",
-		"../models/det3.bin"
-    };
-    MTCNN mtcnn(model_file, trained_file);
-    cv::VideoCapture mVideoCapture(0);
-    if(!mVideoCapture.isOpened()){
-        return -1;
-    }
-    cv::Mat frame;
-    mVideoCapture>>frame;
-    while(!frame.empty()){
-        mVideoCapture>>frame;
-        if(frame.empty()){
-            break;
-        }
-        struct timeval  tv1,tv2;
-        struct timezone tz1,tz2;
-        gettimeofday(&tv1,&tz1);
-        std::vector<cv::Rect> bbox;
-        mtcnn.detection(frame, bbox);
-        for(vector<cv::Rect>::iterator it = bbox.begin(); it != bbox.end(); it++){
-            rectangle(frame, (*it), Scalar(0,0,255), 2,8,0);
-        }
-        imshow("face_detection",frame);
-        gettimeofday(&tv2,&tz2);
-        printf( "%s = %g ms \n ", "Detection All time", getElapse(&tv1, &tv2) );
-        int q = cv::waitKey(10);
-        if(q == 27){
-            break;
-        }
-    }
-    return 1;
-}
+//int main(int argc, char** argv){
+//    std::vector<std::string> model_file = {
+//		"../models/det1.param",
+//		"../models/det2.param",
+//		"../models/det3.param"
+//    };
+//
+//    std::vector<std::string> trained_file = {
+//		"../models/det1.bin",
+//		"../models/det2.bin",
+//		"../models/det3.bin"
+//    };
+//    MTCNN mtcnn(model_file, trained_file);
+//    cv::VideoCapture mVideoCapture(0);
+//    if(!mVideoCapture.isOpened()){
+//        return -1;
+//    }
+//    cv::Mat frame;
+//    mVideoCapture>>frame;
+//    while(!frame.empty()){
+//        mVideoCapture>>frame;
+//        if(frame.empty()){
+//            break;
+//        }
+//        struct timeval  tv1,tv2;
+//        struct timezone tz1,tz2;
+//        gettimeofday(&tv1,&tz1);
+//        std::vector<cv::Rect> bbox;
+//        mtcnn.detection(frame, bbox);
+//        for(vector<cv::Rect>::iterator it = bbox.begin(); it != bbox.end(); it++){
+//            rectangle(frame, (*it), Scalar(0,0,255), 2,8,0);
+//        }
+//        imshow("face_detection",frame);
+//        gettimeofday(&tv2,&tz2);
+//        printf( "%s = %g ms \n ", "Detection All time", getElapse(&tv1, &tv2) );
+//        int q = cv::waitKey(10);
+//        if(q == 27){
+//            break;
+//        }
+//    }
+//    return 1;
+//}
